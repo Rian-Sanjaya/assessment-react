@@ -13,6 +13,10 @@ body {
 
   .input-label {
     font-weight: 700;
+
+    &.jenis-kelamin, &.tanggal-lahir {
+      margin-right: 16px;
+    }
   }
 
   .invalid-input {
@@ -53,7 +57,7 @@ body {
 .delete-content {
   font-size: 1.1rem;
 
-  .comodity {
+  .nama {
     font-weight: 700;
   }
 }

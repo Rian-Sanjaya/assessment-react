@@ -1,8 +1,8 @@
 import { Modal, Button} from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteComodity, getLoading } from "../../store/komoditas";
+import { deleteUser, getLoading } from "../../store/user";
 
-function DeleteComodity({ title, modalOpen, setDeleteOpen, currentComodity }) {
+function DeleteUser({ title, modalOpen, setDeleteOpen, currentUser }) {
   const loading = useSelector(getLoading);
   const dispatch = useDispatch();
 
@@ -11,7 +11,7 @@ function DeleteComodity({ title, modalOpen, setDeleteOpen, currentComodity }) {
   };
 
   const handleDelete = () => {
-    dispatch(deleteComodity(currentComodity))
+    dispatch(deleteUser(currentUser))
       .then(() => {
         setDeleteOpen(false);
       })
@@ -34,12 +34,12 @@ function DeleteComodity({ title, modalOpen, setDeleteOpen, currentComodity }) {
       ]}
     >
       <div className="delete-content">
-        <span>Komoditas&nbsp;</span>
-        <span className="comodity">{currentComodity?.komoditas}</span>
+        <span>User&nbsp;</span>
+        <span className="nama">{currentUser?.nama}</span>
         <span>&nbsp;akan dihapus?</span>
       </div>
     </Modal>
   );
 }
 
-export default DeleteComodity;
+export default DeleteUser;

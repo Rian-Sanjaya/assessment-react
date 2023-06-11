@@ -1,16 +1,16 @@
 import { steinStore } from "../api/api-method";
 
 const initialState = {
-  comodities: [],
+  users: [],
   loading: false,
 };
 
-export function komoditasReducer(state = initialState, action) {
+export function userReducer(state = initialState, action) {
   switch (action.type) {
-    case COMODITIES_FETCH:
+    case USERS_FETCH:
       return {
         ...state,
-        comodities: action.payload.comodities,
+        users: action.payload.users,
       };
     case SET_LOADING:
       return {
@@ -23,13 +23,13 @@ export function komoditasReducer(state = initialState, action) {
 }
 
 // selectors
-export const getComodities = (state) => state.comodities.comodities;
+export const getUsers = (state) => state.users.users;
 export const getLoading = (state) => state.comodities.loading;
 
 // action creators
-export const comoditiesFetch = (comodities) => ({
-  type: COMODITIES_FETCH,
-  payload: { comodities },
+export const usersFetch = (users) => ({
+  type: USERS_FETCH,
+  payload: { users },
 });
 
 export const setLoading = (loading) => ({
@@ -37,14 +37,14 @@ export const setLoading = (loading) => ({
   payload: loading,
 });
 
-export function fetchComodities() {
+export function fetchUsers() {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       dispatch(setLoading(true));
       steinStore.read("list")
         .then(res => {
           const data = res;
-          dispatch(comoditiesFetch(data));
+          dispatch(usersFetch(data));
           dispatch(setLoading(false));
           resolve(data);
         })
@@ -57,13 +57,14 @@ export function fetchComodities() {
   };
 }
 
-export function addComodity(comodity) {
+export function addUser(user) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       dispatch(setLoading(true));
-      steinStore.append("list", comodity)
+      console.log('add user: ', user)
+      steinStore.append("list", user)
         .then(() => {
-          dispatch(fetchComodities())
+          dispatch(fetchUsers())
             .then(res => {
               dispatch(setLoading(false));
               resolve(res);
@@ -83,23 +84,24 @@ export function addComodity(comodity) {
   };
 }
 
-export function editComodity(comodity) {
+export function editUser(user) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       dispatch(setLoading(true));
+      console.log('edit user: ', user)
       steinStore.edit("list", {
-        search: { uuid: comodity.uuid },
+        search: { uuid: user.uuid },
         set: {
-          komoditas: comodity.komoditas,
-          area_kota: comodity.area_kota,
-          area_provinsi: comodity.area_provinsi,
-          price: comodity.price,
-          size: comodity.size,
-          timestamp: Date.now().toString(),
+          nama: user.nama,
+          alamat: user.alamat,
+          jenis_kelamin: user.jenis_kelamin,
+          tanggal_lahir: user.tanggal_lahir,
+          created_at: user.created_at,
+          updated_at: user.updated_at,
         }
       })
         .then(() => {
-          dispatch(fetchComodities())
+          dispatch(fetchUsers())
             .then(res => {
               dispatch(setLoading(false));
               resolve(res);
@@ -119,15 +121,15 @@ export function editComodity(comodity) {
   }
 }
 
-export function deleteComodity(comodity) {
+export function deleteUser(user) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       dispatch(setLoading(true));
       steinStore.delete("list", {
-        search: { uuid: comodity.uuid },
+        search: { uuid: user.uuid },
       })
         .then(() => {
-          dispatch(fetchComodities())
+          dispatch(fetchUsers())
             .then(res => {
               dispatch(setLoading(false));
               resolve(res);
@@ -148,5 +150,5 @@ export function deleteComodity(comodity) {
 }
 
 // action types
-export const COMODITIES_FETCH = "comodities/comoditiesFetch";
-export const SET_LOADING = "comodities/setLoading";
+export const USERS_FETCH = "users/usersFetch";
+export const SET_LOADING = "users/setLoading";

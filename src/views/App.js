@@ -1,6 +1,6 @@
 import { Layout } from "antd";
 import HeaderLayout from "../components/layout/Header";
-import Komoditas from "../components/komoditas/Komoditas";
+import ListUser from "../components/user/ListUser";
 
 function App() {
   const { Header, Content } = Layout;
@@ -16,7 +16,7 @@ function App() {
         className="content-layout-wrapper"
         style={{ padding: "0 16px", marginTop: 64 }}
       >
-        <Komoditas />
+        <ListUser />
       </Content>
     </Layout>
   );
