@@ -6,7 +6,7 @@ function App() {
   const { Header, Content } = Layout;
 
   return (
-    <Layout style={{ minWidth: 450 }}>
+    <Layout style={{ minWidth: 414 }}>
       <Header
         style={{ position: "fixed", zIndex: 1, width: "100%", background: "#fff" }}
       >
