@@ -1,4 +1,8 @@
+Applikasi ini dibuat berdasarkan assessment test BIAENERGI untuk bagian Test Pemrograman Aplikasi
 
+## Demo
+
+[User CRUD](https://tourmaline-cannoli-9e472e.netlify.app/)
 
 ## Dbuat dengan mengunakan React 
 
@@ -11,7 +15,7 @@ Fitur:
 - tabel list bisa di urut
 - menambah, melihat detail, mengubah dan menghapus mengunakan modal
 - redux untuk state management
-- stein-js-client untuk akses api
+- stein-js-client untuk akses api (https://docs.steinhq.com/hosting-introduction)
 - SCSS untuk styling
 - ant design
 - react-hook-form untuk validasi form

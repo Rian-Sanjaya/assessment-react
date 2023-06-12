@@ -87,7 +87,6 @@ export function editUser(user) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       dispatch(setLoading(true));
-      console.log('edit user: ', user)
       steinStore.edit("list", {
         search: { uuid: user.uuid },
         set: {
