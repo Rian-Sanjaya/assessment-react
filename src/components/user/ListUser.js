@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
-import { Button, Table, Dropdown, Menu, Space } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Button, Table, Space, Input } from "antd";
+import { PlusOutlined, EyeOutlined, FormOutlined, DeleteOutlined } from "@ant-design/icons";
 import { titleChanged } from "../../store/header";
 import { getUsers, getLoading, fetchUsers } from "../../store/user"
+import DetailUser from "./DetailUser";
 import UserModal from "./UserModal";
 import DeleteUser from "./DeleteUser";
 
@@ -31,17 +32,31 @@ const sortNama = (a, b) => {
   return 0;
 };
 
+const sortJenisKelamin = (a, b) => {
+  const nameA = a.jenis_kelamin.toUpperCase();
+  const nameB = b.jenis_kelamin.toUpperCase();
+  if (nameA < nameB) {
+    return -1;
+  }
+  if (nameA > nameB) {
+    return 1;
+  }
+
+  return 0;
+};
+
 function ListUser() {
-  // const [comoditiesFiltered, setComoditiesFiltered] = useState(null);
-  // const [comoditySearch, setComoditySearch] = useState("");
+  const [namaSearch, setNamaSearch] = useState("");
   const [usersList, setUsersList] = useState(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [titleModal, setTitleModal] = useState("");
   const users = useSelector(getUsers);
   const loading = useSelector(getLoading);
   const dispatch = useDispatch();
-  // const { Search } = Input;
+  const { Search } = Input;
   
   const columns = [
     {
@@ -59,55 +74,31 @@ function ListUser() {
       index: 2,
       title: "P/W",
       dataIndex: "jenis_kelamin",
-      // sorter: sortProvinsi,
+      sorter: sortJenisKelamin,
     },
     {
       index: 3,
       title: "Tanggal Lahir",
       dataIndex: "tglLahir",
-      // sorter: (a, b) => a.size - b.size,
     },
     {
       index: 4,
       title: "Tanggal Input",
       dataIndex: "createdAt",
-      // sorter: (a, b) => a.price - b.price,
     },
     {
       index: 5,
-      title: 'Action',
-      key: 'action',
+      title: 'Aksi',
+      key: 'aksi',
       render: (_, record) => (
-        <Dropdown overlay={menu(record)} trigger={['click']}>
-          <span>
-            <Space style={{ cursor: "pointer"}}>
-              ...
-            </Space>
-          </span>
-        </Dropdown>
+        <Space>
+          <button className="action-button" title="Lihat detil user" onClick={e => onClickAksi(e, record, "View")}><EyeOutlined /></button>
+          <button className="action-button" title="Edit user" onClick={e => onClickAksi(e, record, "Edit")}><FormOutlined /></button>
+          <button className="action-button" title="Hapus user" onClick={e => onClickAksi(e, record, "Delete")}><DeleteOutlined /></button>
+        </Space>
       ),
-    },
+    }
   ];
-
-  const menu = (record) => (
-    <Menu
-      onClick={e => onClickAction(e, record)}
-      items={[
-        {
-          label: 'Edit',
-          key: '1',
-        },
-        {
-          type: 'divider',
-        },
-        {
-          label: 'Hapus',
-          key: '3',
-          style: { color: "#f5222d" },
-        },
-      ]}
-    />
-  );
 
   useEffect(() => {
     dispatch(titleChanged("User"));
@@ -116,50 +107,44 @@ function ListUser() {
 
   useEffect(() => {
     let filtered = [];
-    filtered = users.filter(user => user.uuid);
+    if (namaSearch) {
+      filtered = users.filter(item => (
+        item.uuid &&
+        item.nama.trim().toLowerCase().includes(namaSearch.trim())
+      ))
+    } else {
+      filtered = users.filter(user => user.uuid);
+    }
     const usersData = filtered.map(user => {
       const tmp = user;
       tmp.tglLahir = moment(tmp.tanggal_lahir).format("DD MMM YYYY");
-      tmp.createdAt = moment(tmp.created_at).format("DD MM YYYY hh:mm")
+      tmp.createdAt = moment(tmp.created_at).format("DD MMM YYYY hh:mm")
       return tmp;
     })
     setUsersList(usersData)
-  }, [users])
+  }, [users, namaSearch])
 
-  // useEffect(() => {
-  //   let filtered = [];
-  //   if (comoditySearch) {
-  //     filtered = comodities.filter(item => (
-  //       item.uuid &&
-  //       item.komoditas.trim().toLowerCase().includes(comoditySearch.trim()) 
-  //     ));
-  //   } else {
-  //     filtered = comodities.filter(item => item.uuid);
-  //   }
-  //   const comoditiesData = filtered.map(comodity => {
-  //     const tmp = comodity;
-  //     tmp.formatedPrice = formatCurrency(comodity.price).replace(/[$]/g, '');
-  //     return tmp;
-  //   });
-  //   setComoditiesFiltered(comoditiesData);
-  // }, [comodities, comoditySearch])
-
-  // const onSearchKomoditas = (value) => {
-  //   setComoditySearch(value);
-  // };
+  const onSearchNama = (value) => {
+    setNamaSearch(value);
+  };
 
   const onAddUser = () => {
+    setTitleModal("Tambah User");
     setCurrentUser(emptyUser);
     setModalOpen(true);
   }
 
-  const onClickAction = (e, record) => {
-    if (e.key === "1") {
+  const onClickAksi = (e, record, action) => {
+    if (action === "View") {
+      setTitleModal("Detil User");
+      setCurrentUser(record);
+      setDetailOpen(true);
+    } else if (action === "Edit") {
+      setTitleModal("Edit User");
       setCurrentUser(record);
       setModalOpen(true);
-    } 
-
-    if (e.key === "3") {
+    } else if (action === "Delete") {
+      setTitleModal("Hapus User");
       setCurrentUser(record);
       setDeleteOpen(true);
     }
@@ -171,9 +156,9 @@ function ListUser() {
     >
       <>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          {/* <div>
-            <Search placeholder="Cari Komoditas" onSearch={onSearchKomoditas} allowClear style={{ width: 200 }} />
-          </div> */}
+          <div>
+            <Search placeholder="Cari Nama" onSearch={onSearchNama} allowClear style={{ width: 200 }} />
+          </div>
           <div>
             <Button type="primary" onClick={onAddUser}>
               <PlusOutlined />
@@ -192,8 +177,9 @@ function ListUser() {
             scroll={{ x: 568 }}
           />
         </div>
-        <UserModal title="Tambah User" modalOpen={modalOpen} setModalOpen={setModalOpen} currentUser={currentUser} />
-        <DeleteUser title="Hapus User" modalOpen={deleteOpen} setDeleteOpen={setDeleteOpen} currentUser={currentUser} />
+        <DetailUser title={titleModal} modalOpen={detailOpen} setDetailOpen={setDetailOpen} currentUser={currentUser} />
+        <UserModal title={titleModal} modalOpen={modalOpen} setModalOpen={setModalOpen} currentUser={currentUser} />
+        <DeleteUser title={titleModal} modalOpen={deleteOpen} setDeleteOpen={setDeleteOpen} currentUser={currentUser} />
       </>
     </div>
   )

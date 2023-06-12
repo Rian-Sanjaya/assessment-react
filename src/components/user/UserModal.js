@@ -14,18 +14,6 @@ function UserModal({ title, modalOpen, setModalOpen, currentUser }) {
   const dispatch = useDispatch();
   const { register, trigger, watch, setValue, reset, formState: { errors } } = useForm();
 
-  // useEffect(() => {
-  //   if (areas && areas.length > 0) {
-  //     const filtered = areas.filter(area => area.city)
-  //     const sorted = filtered.sort(sortArea);
-  //     setAreasSorted(sorted);
-  //   }
-
-  //   if (sizes && sizes.length > 0) {
-  //     setSizesSorted(sizes);
-  //   }
-  // }, [areas, sizes])
-
   useEffect(() => {
     if(currentUser?.uuid) {
       setValue("nama", currentUser.nama);
@@ -43,12 +31,7 @@ function UserModal({ title, modalOpen, setModalOpen, currentUser }) {
   const handleCancel = () => {
     if(currentUser?.uuid) {
       setValue("nama", currentUser.nama);
-      // const area = areasSorted?.find(area => area.city.trim() === currentUser.area_kota.trim());
-      // setValue("city", currentUser.area_kota);
-      // setProvince(area?.province);
       setValue("alamat", currentUser.alamat);
-      // setValue("jenis_kelamin", currentUser.jenis_kelamin);
-      // setValue("tanggal_lahir", currentUser.tanggal_lahir);
       setJenisKelamin(currentUser.jenis_kelamin);
       setTanggalLahir(moment(currentUser.tanggal_lahir));
       trigger();
@@ -62,22 +45,11 @@ function UserModal({ title, modalOpen, setModalOpen, currentUser }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log('state kel: ', jenisKelamin);
     await trigger();
-    // console.log('kelamin: ', watch("jenis_kelamin"))
-    // if (
-    //   Object.keys(errors).length > 0 || 
-    //   !watch("nama") || 
-    //   !watch("alamat") ||
-    //   !watch("jenis_kelamin") || 
-    //   !watch("tanggal_lahir")
-    // ) {
-    //   return;
-    // }
     if (
       Object.keys(errors).length > 0 || 
-      !watch("nama") || 
-      !watch("alamat") 
+      !watch("nama") ||
+      !tanggalLahir
     ) {
       return;
     }
@@ -100,7 +72,6 @@ function UserModal({ title, modalOpen, setModalOpen, currentUser }) {
       alamat: watch("alamat"),
       jenis_kelamin: jenisKelamin,
       tanggal_lahir: tanggalLahir,
-      // timestamp: Date.now().toString(),
       created_at: currentUser?.uuid ? currentUser.created_at : new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
@@ -117,11 +88,7 @@ function UserModal({ title, modalOpen, setModalOpen, currentUser }) {
       dispatch(addUser([user]))
         .then(() => {
           setValue("nama", "");
-          // setValue("city", "");
-          // setProvince("");
           setValue("alamat", "");
-          // setValue("jenis_kelamin", "");
-          // setValue("tanggal_lahir", "");
           setModalOpen(false);
         })
         .catch(err => {
@@ -145,18 +112,10 @@ function UserModal({ title, modalOpen, setModalOpen, currentUser }) {
   };
 
   const onJenisKelaminChange = async (e) => {
-    // console.log('kel: ', e.target.value)
     setJenisKelamin(e.target.value);
-    // setValue("jenis_kelamin", e.target.value);
-    // await trigger("jenis_kelamin");
-    // console.log('kelam: ', watch("jenis_kelamin"))
   }
 
   const onTanggalLahirChange = (date, dateString) => {
-    // console.log(date, dateString)
-    // console.log('date: ', date);
-    // console.log('date string: ', dateString)
-    // console.log('date format: ', moment(date).format())
     setTanggalLahir(moment(date))
   }
 
@@ -180,7 +139,6 @@ function UserModal({ title, modalOpen, setModalOpen, currentUser }) {
             placeholder="Nama lengkap" 
             allowClear
             name="nama" 
-            // style={{ textTransform: "uppercase" }}
             {...register("nama", {
               required: true,
             })}
@@ -195,33 +153,26 @@ function UserModal({ title, modalOpen, setModalOpen, currentUser }) {
             placeholder="Detil alamat" 
             allowClear
             name="alamat" 
-            {...register("alamat", {
-              required: true,
-            })}
+            {...register("alamat")}
             value={watch("alamat")}
             onChange={e => onAlamatChange(e)}
           />
-          {errors.alamat && <span className="invalid-input">Alamat harus diisi</span>}
         </div>
         <div className="input-box">
           <span className="input-label jenis-kelamin">P / W:</span>
           <Radio.Group
             name="jenis_kelamin"
-            // defaultValue={"Pria"}
             value={jenisKelamin}
             onChange={e => onJenisKelaminChange(e)}
           >
             <Radio value={"Pria"}>Pria</Radio>
             <Radio value={"Wanita"}>Wanita</Radio>
           </Radio.Group>
-          <div>
-            {errors.jenis_kelamin && <span className="invalid-input">P / W harus diisi</span>}
-          </div>
         </div>
         <div className="input-box">
         <span className="input-label tanggal-lahir">Tanggal lahir:</span>
             <DatePicker
-              // defaultValue={moment()}
+              allowClear={false}
               format={"DD MM YYYY"}
               value={tanggalLahir}
               onChange={onTanggalLahirChange}

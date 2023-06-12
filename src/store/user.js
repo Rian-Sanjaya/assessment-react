@@ -24,7 +24,7 @@ export function userReducer(state = initialState, action) {
 
 // selectors
 export const getUsers = (state) => state.users.users;
-export const getLoading = (state) => state.comodities.loading;
+export const getLoading = (state) => state.users.loading;
 
 // action creators
 export const usersFetch = (users) => ({
@@ -61,7 +61,6 @@ export function addUser(user) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       dispatch(setLoading(true));
-      console.log('add user: ', user)
       steinStore.append("list", user)
         .then(() => {
           dispatch(fetchUsers())
